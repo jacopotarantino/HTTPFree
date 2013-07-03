@@ -1,0 +1,42 @@
+doctype 5
+html
+	head
+		title HTTPWeb
+		meta(name='viewport', content='width=device-width,initial-scale=1.0')
+		link(rel='stylesheet', href='/css/bootstrap.min.css')
+		link(rel='stylesheet', href='/css/bootstrap-responsive.min.css')
+		//- link(rel="icon", href="")
+
+		script(type='text/javascript', src='/js/jquery.min.js')
+		//- script(type='text/javascript', src='/socket.io/socket.io.js')
+		script(type='text/javascript', src='/js/bootstrap.min.js')
+		//- script(type='text/javascript', src='/js/app.min.js')
+
+	body
+		.container
+			.row
+				.well.well-large.span4.offset4(style="text-align:center;")
+					form.form-horizontal(method="GET", action="/site")
+						if error
+							p.alert You have to fill in the form!
+
+						p What site would you like to inspect?
+						
+						.control-group
+							label.control-label Domain
+							.controls
+								input(type="text", name="lookup")
+						.control-group
+							label.control-label Path
+							.controls
+								input(type="text", name="path")
+						.control-group
+							label.control-label Port
+							.controls
+								input(type="number", name="port", value="80")
+						.control-group
+							label.control-label Method
+							.controls
+								input(type="text", name="method", value="GET")
+						
+						button.btn.btn-primary(type="submit") Go!

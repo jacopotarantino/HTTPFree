@@ -1,0 +1,43 @@
+doctype 5
+html
+	head
+		title HTTPWeb
+		meta(name='viewport', content='width=device-width,initial-scale=1.0')
+		link(rel='stylesheet', href='/css/bootstrap.min.css')
+		link(rel='stylesheet', href='/css/bootstrap-responsive.min.css')
+		//- link(rel="icon", href="")
+
+		script(type='text/javascript', src='/js/jquery.min.js')
+		//- script(type='text/javascript', src='/socket.io/socket.io.js')
+		script(type='text/javascript', src='/js/bootstrap.min.js')
+		//- script(type='text/javascript', src='/js/app.min.js')
+
+	body
+		.container
+			.navbar
+				.navbar-inner
+					ul.nav
+						li
+							a.brand(href="/") Search again...
+						li
+							a.active(href="#pagesource") Page Source
+						li
+							a(href="#sentHeaders") Sent Headers
+						li
+							a(href="#receivedHeaders") Received Headers
+						li
+							a(href="#waterfall") Waterfall
+
+
+		.container
+			.row
+				.span12
+					#pagesource.well= theSource
+
+			.row
+				.span12
+					#sentHeaders.well= sentHeaders
+
+			.row
+				.span12
+					#receivedHeaders.well= responseHeaders

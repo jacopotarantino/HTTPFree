@@ -1,0 +1,14 @@
+{
+  "name": "BULLETT",
+  "version": "4.4.0",
+  "dependencies": {
+    "express": "latest",
+    "socket.io": "latest",
+    "passport": "latest",
+    "jade": "latest"
+  },
+  "engines": {
+    "node": "0.10.12",
+    "npm": "1.2.x"
+  }
+}
