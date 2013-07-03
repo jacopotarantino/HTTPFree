@@ -5,7 +5,8 @@
     "express": "latest",
     "socket.io": "latest",
     "passport": "latest",
-    "jade": "latest"
+    "jade": "latest",
+    "js-beautify": "~1.4.0"
   },
   "engines": {
     "node": "0.10.12",

@@ -14,6 +14,31 @@ app.configure(function() {
 	app.set('view engine', 'jade');
 });
 
+function objectToHTML(obj) {
+	var obj = JSON.stringify(obj);
+
+	obj = obj.replace(/","/g, "\",<br>\"").replace(/\}\}/g, "}<br>}").replace(/\{"/g, "{<br>\"");
+	obj = obj.replace(/headers":\{(<br>.*)\}/, function(match, p1, offset, string) {
+		var inside = p1;
+		inside = inside.replace(/<br>"/g, "<br>&nbsp;&nbsp;&nbsp;&nbsp;\"");
+		return 'headers":{' + inside + '}';
+	});
+
+	/* finding items within an object:
+	find opening brace where there are no opening braces inbetween it and closing brace
+	replace both with html entities
+	objects all work in a tree structure and can't overlap so rinse and repeat
+	* needs to be done recursively
+
+	repeat for arrays
+
+	*/
+	return obj;
+}
+
+function prettyHTML(str) {
+	return str.replace(/</g, "&lt;").replace(/>/g, "&gt;<br>");
+}
 
 
 app.get('/', function(req, res, next) {
@@ -29,11 +54,18 @@ app.get('/site', function(req, response, next) {
 	}
 	response.cookie('searchformErrors', false);
 
+	var newHeaders = req.headers;
+	newHeaders.host = req.query.lookup;
+	newHeaders.cookie = '';
+	newHeaders['accept-encoding'] = '';
+
+
 	var options = {
-		host: req.query.lookup,
-		port: req.query.port,
-		path: req.query.path,
-		method: req.query.method
+		host: req.query.lookup
+		, port: req.query.port
+		, path: req.query.path
+		, method: req.query.method
+		, headers: newHeaders
 	};
 
 	var req = http.request(options, function(res) {
@@ -42,9 +74,9 @@ app.get('/site', function(req, response, next) {
 		
 		res.on('end', function() {
 			response.render('results'
-				, {theSource: d
-				, sentHeaders: JSON.stringify(options)
-				, responseHeaders: JSON.stringify(res.headers)
+				, {theSource: prettyHTML(d)
+				, sentHeaders: objectToHTML(options)
+				, responseHeaders: objectToHTML(res.headers)
 				});
 		});
 	});
@@ -55,8 +87,6 @@ app.get('/site', function(req, response, next) {
 });
 
 
-
-
-
-var httpPort = process.env.PORT || 5000
-	, server = http.createServer(app).listen(5005);
+var httpPort = process.env.PORT || 5005;
+var server = http.createServer(app);
+server.listen(httpPort);

@@ -32,12 +32,15 @@ html
 		.container
 			.row
 				.span12
-					#pagesource.well= theSource
+					h3 Sent Headers
+					#sentHeaders.well!= sentHeaders
 
 			.row
 				.span12
-					#sentHeaders.well= sentHeaders
+					h3 Received Headers
+					#receivedHeaders.well!= responseHeaders
 
 			.row
 				.span12
-					#receivedHeaders.well= responseHeaders
+					h3 Received Body
+					#pagesource.well!= theSource
