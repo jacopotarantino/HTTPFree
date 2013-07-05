@@ -1,7 +1,9 @@
 var http = require('http')
 	, io = require('socket.io')
 	, passport = require('passport')
-	, express = require('express');
+	, express = require('express')
+	, jspretty = require('js-beautify')
+	, htmlpretty = require('js-beautify').html;
 
 var app = express();
 
@@ -14,45 +16,36 @@ app.configure(function() {
 	app.set('view engine', 'jade');
 });
 
-function objectToHTML(obj) {
-	var obj = JSON.stringify(obj);
-
-	obj = obj.replace(/","/g, "\",<br>\"").replace(/\}\}/g, "}<br>}").replace(/\{"/g, "{<br>\"");
-	obj = obj.replace(/headers":\{(<br>.*)\}/, function(match, p1, offset, string) {
-		var inside = p1;
-		inside = inside.replace(/<br>"/g, "<br>&nbsp;&nbsp;&nbsp;&nbsp;\"");
-		return 'headers":{' + inside + '}';
-	});
-
-	/* finding items within an object:
-	find opening brace where there are no opening braces inbetween it and closing brace
-	replace both with html entities
-	objects all work in a tree structure and can't overlap so rinse and repeat
-	* needs to be done recursively
-
-	repeat for arrays
-
-	*/
-	return obj;
-}
-
-function prettyHTML(str) {
-	return str.replace(/</g, "&lt;").replace(/>/g, "&gt;<br>");
-}
-
+js_options = {
+    "indent_size": 4,
+    "indent_char": " ",
+    "indent_level": 0,
+    "indent_with_tabs": false,
+    "preserve_newlines": true,
+    "max_preserve_newlines": 10,
+    "jslint_happy": false,
+    "brace_style": "collapse",
+    "keep_array_indentation": false,
+    "keep_function_indentation": false,
+    "space_before_conditional": true,
+    "break_chained_methods": false,
+    "eval_code": false,
+    "unescape_strings": false,
+    "wrap_line_length": 0
+};
 
 app.get('/', function(req, res, next) {
 	res.render('searchform', {error: req.cookies.searchformErrors});
 });
 
 
-app.get('/site', function(req, response, next) {
+app.get('/site', function(req, res, next) {
 	if(!req.query.lookup) {
-		response.cookie('searchformErrors', true);
-		response.redirect('/');
+		res.cookie('searchformErrors', true);
+		res.redirect('/');
 		return;
 	}
-	response.cookie('searchformErrors', false);
+	res.cookie('searchformErrors', false);
 
 	var newHeaders = req.headers;
 	newHeaders.host = req.query.lookup;
@@ -68,22 +61,49 @@ app.get('/site', function(req, response, next) {
 		, headers: newHeaders
 	};
 
-	var req = http.request(options, function(res) {
+	var startTime = Date.now();
+	var request = http.request(options);
+	request.end();
+
+	request.on('socket', function(socket) {
+		// console.log('got a socket after ' + (Date.now() - startTime));
+	});
+
+	request.on('response', function(response) {
 		var d = '';
-		res.on('data', function(chunk) { d += chunk; });
-		
-		res.on('end', function() {
-			response.render('results'
-				, {theSource: prettyHTML(d)
-				, sentHeaders: objectToHTML(options)
-				, responseHeaders: objectToHTML(res.headers)
+		var waterfallData = [];
+
+		var responseTime = Date.now();
+
+		response.on('data', function(chunk) {
+			d += chunk;
+		});
+
+		response.on('end', function() {
+			waterfallData.push({
+				name: req.query.path
+				, responseTime: responseTime - startTime
+				, downloadTime: Date.now() - responseTime
+			});
+
+			res.render('results'
+				, {theSource: htmlpretty(d)
+				, sentHeaders: jspretty(JSON.stringify(options), js_options) // objectToHTML(options)
+				, responseHeaders: jspretty(JSON.stringify(response.headers), js_options)
+				, waterfallData: waterfallData
 				});
 		});
 	});
 
-	req.on('error', function(e) { console.log("Got error: " + e.message); });
+	request.on('upgrade', function(res, socket, upgradeHead) {
+		console.log('got upgraded!');
+		socket.end();
+		process.exit(0);
+	});
 
-	req.end();
+	request.on('error', function(e) { console.log("Got error: " + e.message); });
+
+	
 });
 
 

@@ -33,14 +33,26 @@ html
 			.row
 				.span12
 					h3 Sent Headers
-					#sentHeaders.well!= sentHeaders
+					pre#sentHeaders.well= sentHeaders
 
 			.row
 				.span12
 					h3 Received Headers
-					#receivedHeaders.well!= responseHeaders
+					pre#receivedHeaders.well= responseHeaders
+
+			.row
+				.span12
+					h3 Waterfall
+					#waterfallData.well
+						for resource in waterfallData
+							p
+								span Resource #{resource.name}
+								br
+								span Response Time #{resource.responseTime}ms
+								br
+								span Download Time #{resource.downloadTime}ms
 
 			.row
 				.span12
 					h3 Received Body
-					#pagesource.well!= theSource
+					pre#pagesource.well= theSource

@@ -1,6 +1,6 @@
 {
-  "name": "BULLETT",
-  "version": "4.4.0",
+  "name": "HTTPWeb",
+  "version": "1.0.0",
   "dependencies": {
     "express": "latest",
     "socket.io": "latest",
