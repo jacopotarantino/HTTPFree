@@ -42,6 +42,11 @@ app.get('/', function(req, res, next) {
 
 
 app.get('/site', function(req, res, next) {
+	if(req.query.method.match(/DELETE/ig)) {
+		// res.send(418, "I'm a teapot.");
+		res.redirect('/img/no.jpg');
+		return;
+	}
 	if(!req.query.lookup) {
 		res.cookie('searchformErrors', true);
 		res.redirect('/');
