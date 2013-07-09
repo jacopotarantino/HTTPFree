@@ -78,7 +78,7 @@ app.get('/site', function(req, res, next) {
 		});
 
 		response.on('end', function() {
-			var child = exec('phantomjs lib/netsniff.js ' + 'http://' + req.query.lookup
+			var child = exec('phantomjs lib/netsniff.js ' + 'http://' + req.query.lookup + req.query.path
 
 				, { encoding: 'utf8'
 					// , timeout: 0
