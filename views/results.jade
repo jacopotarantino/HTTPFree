@@ -46,11 +46,9 @@ html
 					#waterfallData.well
 						for resource in waterfallData
 							p
-								span Resource #{resource.name}
+								span Resource #{resource.request.url}
 								br
-								span Response Time #{resource.responseTime}ms
-								br
-								span Download Time #{resource.downloadTime}ms
+								span Total Time #{resource.time}ms
 
 			.row
 				.span12

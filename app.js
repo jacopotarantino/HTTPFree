@@ -2,7 +2,9 @@ var http = require('http')
 	, io = require('socket.io')
 	, passport = require('passport')
 	, express = require('express')
+	, validator = require('validator')
 	, jspretty = require('js-beautify')
+	, exec = require('child_process').exec
 	, htmlpretty = require('js-beautify').html;
 
 var app = express();
@@ -61,7 +63,6 @@ app.get('/site', function(req, res, next) {
 		, headers: newHeaders
 	};
 
-	var startTime = Date.now();
 	var request = http.request(options);
 	request.end();
 
@@ -71,27 +72,39 @@ app.get('/site', function(req, res, next) {
 
 	request.on('response', function(response) {
 		var d = '';
-		var waterfallData = [];
-
-		var responseTime = Date.now();
 
 		response.on('data', function(chunk) {
 			d += chunk;
 		});
 
 		response.on('end', function() {
-			waterfallData.push({
-				name: req.query.path
-				, responseTime: responseTime - startTime
-				, downloadTime: Date.now() - responseTime
-			});
+			var child = exec('phantomjs lib/netsniff.js ' + 'http://' + req.query.lookup
 
-			res.render('results'
-				, {theSource: htmlpretty(d)
-				, sentHeaders: jspretty(JSON.stringify(options), js_options) // objectToHTML(options)
-				, responseHeaders: jspretty(JSON.stringify(response.headers), js_options)
-				, waterfallData: waterfallData
-				});
+				, { encoding: 'utf8'
+					// , timeout: 0
+					, maxBuffer: 1000*1024
+					, killSignal: 'SIGTERM'
+					// , cwd: null
+					// , env: null
+				}
+
+				, function (error, stdout, stderr) {
+					if (error !== null) {
+						console.log('exec error: ' + error);
+						return;
+					}
+				
+					var har = JSON.parse(stdout).log.entries;
+
+					res.render('results'
+						, {theSource: htmlpretty(d)
+						, sentHeaders: jspretty(JSON.stringify(options), js_options) // objectToHTML(options)
+						, responseHeaders: jspretty(JSON.stringify(response.headers), js_options)
+						, waterfallData: har
+						});
+				}
+			);
+			
 		});
 	});
 

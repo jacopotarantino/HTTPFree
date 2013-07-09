@@ -6,7 +6,8 @@
     "socket.io": "latest",
     "passport": "latest",
     "jade": "latest",
-    "js-beautify": "~1.4.0"
+    "js-beautify": "~1.4.0",
+    "validator": "~1.2.1"
   },
   "engines": {
     "node": "0.10.12",
