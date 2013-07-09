@@ -17,26 +17,39 @@ html
 			.row
 				.well.well-large.span4.offset4(style="text-align:center;")
 					form.form-horizontal(method="GET", action="/site")
-						if error
-							p.alert You have to fill in the form!
+						div.searchform
+							if error
+								p.alert You have to fill in the form!
 
-						p What site would you like to inspect?
+							p What site would you like to inspect?
+							
+							.control-group
+								label.control-label Domain
+								.controls
+									input(type="text", name="lookup")
+							.control-group
+								label.control-label Path
+								.controls
+									input(type="text", name="path")
+							.control-group
+								label.control-label Port
+								.controls
+									input(type="number", name="port", value="80")
+							.control-group
+								label.control-label Method
+								.controls
+									input(type="text", name="method", value="GET")
 						
-						.control-group
-							label.control-label Domain
-							.controls
-								input(type="text", name="lookup")
-						.control-group
-							label.control-label Path
-							.controls
-								input(type="text", name="path")
-						.control-group
-							label.control-label Port
-							.controls
-								input(type="number", name="port", value="80")
-						.control-group
-							label.control-label Method
-							.controls
-								input(type="text", name="method", value="GET")
+							button.btn.btn-primary(type="submit") Go!
 						
-						button.btn.btn-primary(type="submit") Go!
+						div.loader
+							h3 Loading...
+
+							ul.bokeh
+								li
+								li
+								li
+								li
+
+			
+					
