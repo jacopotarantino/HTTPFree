@@ -43,7 +43,6 @@ app.get('/', function(req, res, next) {
 
 app.get('/site', function(req, res, next) {
 	if(req.query.method.match(/DELETE/ig)) {
-		// res.send(418, "I'm a teapot.");
 		res.redirect('/img/no.jpg');
 		return;
 	}
@@ -72,7 +71,6 @@ app.get('/site', function(req, res, next) {
 	request.end();
 
 	request.on('socket', function(socket) {
-		// console.log('got a socket after ' + (Date.now() - startTime));
 	});
 
 	request.on('response', function(response) {
@@ -103,7 +101,7 @@ app.get('/site', function(req, res, next) {
 
 					res.render('results'
 						, {theSource: htmlpretty(d)
-						, sentHeaders: jspretty(JSON.stringify(options), js_options) // objectToHTML(options)
+						, sentHeaders: jspretty(JSON.stringify(options), js_options)
 						, responseHeaders: jspretty(JSON.stringify(response.headers), js_options)
 						, waterfallData: har
 						});
